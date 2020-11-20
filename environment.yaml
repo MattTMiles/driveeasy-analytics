@@ -2,10 +2,12 @@ name: pydea
 channels:                    # Lists package sources to install from
 - defaults                   # Default Anaconda Repository
 - conda-forge
+- plotly
 dependencies:
   - flake8
   - h5py
   - matplotlib
+  - plotly
   - numpy
   - pandas
   - pip

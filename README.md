@@ -17,7 +17,6 @@ When running this command, the first time you pull or push from the remote repos
 Afterwards, for consequent communications with the remote repository you don't have to provide the username and password.
 
 
-
 You can aslo clone with ssh to save the trouble of typing password everytime pushing to remote branch.
 Refer to `https://support.atlassian.com/bitbucket-cloud/docs/set-up-an-ssh-key/` for setting up ssh key.
    ```bash
