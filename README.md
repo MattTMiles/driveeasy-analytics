@@ -7,6 +7,16 @@
 ```
 git clone https://gitlab-external.parc.com/iot-tower/driveeasy/driveeasy-analytics.git
 ```
+If you want to save your username and password to avoid typing it everytime your push/pull:
+
+You can use the git config to enable credentials storage in git.
+```
+git config --global credential.helper store
+```
+When running this command, the first time you pull or push from the remote repository, you'll get asked about the username and password.
+Afterwards, for consequent communications with the remote repository you don't have to provide the username and password.
+
+
 
 You can aslo clone with ssh to save the trouble of typing password everytime pushing to remote branch.
 Refer to `https://support.atlassian.com/bitbucket-cloud/docs/set-up-an-ssh-key/` for setting up ssh key.
