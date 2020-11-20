@@ -1,0 +1,27 @@
+name: pydea
+channels:                    # Lists package sources to install from
+- defaults                   # Default Anaconda Repository
+- conda-forge
+dependencies:
+  - flake8
+  - h5py
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+  - pytables
+  - pytest
+  - python=3.8.5
+  - requests
+  - scikit-learn
+  - scipy
+  - tqdm
+  - werkzeug
+  - xarray
+  - loguru
+
+
+  - pip:
+    - streamlit
+    - -e .
+    - python-dotenv
