@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import xarray as xr
 
 # sns.set_context('talk')
-plt.style.use('science')
+plt.style.use('seaborn')
 
 
 def create_XYZ_data(event):
