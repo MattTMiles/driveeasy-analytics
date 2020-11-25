@@ -1,8 +1,9 @@
-# DriveEasy python package
+# DriveEasy Analytics python package
 
 ## Contributing
+Refer to `https://github.com/FilippoBovo/production-data-science` for an excellent introduciton to workflow of data science projects.
 
-### Setting up the development environment
+## Setting up the development environment
 1. Clone the repository:
 ```
 git clone https://gitlab-external.parc.com/iot-tower/driveeasy/driveeasy-analytics.git
