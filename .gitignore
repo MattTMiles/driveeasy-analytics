@@ -22,3 +22,7 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+/pydea.egg-info/
+/pydea/__pycache__/
+*/__pycache__/
+*__pycache__*
