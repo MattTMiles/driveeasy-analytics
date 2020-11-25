@@ -43,10 +43,12 @@ def test_wav_data():
 
 if __name__=='__main__':
     data_dir = Path(
-        r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\raw_data\10_mins_batches\from_batch64')
-    # convert_dir_to_wav_format(data_dir)
+        # r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\raw_data\10_mins_batches\from_batch64')
+        r'C:\Users\Jin Yan\OneDrive - PARC\FiBridge\Phase_3\DriveEasy\Francis\raw_data\10_mins_batches\from_batch64')
 
-    test_wav_data()
+    convert_dir_to_wav_format(data_dir)
+
+    # test_wav_data()
     
 
 
