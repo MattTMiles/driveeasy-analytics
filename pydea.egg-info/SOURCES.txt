@@ -1,0 +1,8 @@
+README.md
+setup.py
+pydea/__init__.py
+pydea.egg-info/PKG-INFO
+pydea.egg-info/SOURCES.txt
+pydea.egg-info/dependency_links.txt
+pydea.egg-info/requires.txt
+pydea.egg-info/top_level.txt
