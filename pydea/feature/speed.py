@@ -1,6 +1,7 @@
-from scipy import signal
-import numpy as np
 
+from scipy import fft, signal
+import numpy as np
+from sklearn.preprocessing import minmax_scale
 
 FIBER_DISTANCE = 2.5
 SAMPLING_RATE = 200.0
@@ -52,7 +53,66 @@ class SpeedEstimationQC:
 
 
 class SpeedEstimationHY:
-    pass
+    def __init__(self,
+                 fiber1_data,
+                 fiber2_data,
+                 fiber_distance=2.5,
+                 frequency=200.0):
+        self.frequency = frequency
+        self.sensor_pairs = []
+        self.lane_sensors = {'lane_1': []}
+        self.sensor_locations = []
+        self.fiber1_data = fiber1_data
+        self.fiber2_data = fiber2_data
+        self.fiber_distance = fiber_distance
+
+    def estimate_delta_points(self, data1, data2, method='correlation'):
+        """method ='correlation', 'fft'
+        """
+        if method == 'correlation':
+            len_signal = len(data1)
+            s1 = np.argmax(signal.correlate(data1, data2))
+            #     s2 = np.argmax(signal.correlate(data2,data1))
+            shift = s1 - len_signal
+        elif method == 'fft':
+            af = fft.fft(data1)
+            bf = fft.fft(data2)
+            c = fft.ifft(af * np.conj(bf))
+            shift = np.argmax(abs(c))
+        return shift
+
+    def integer_to_time(self, number):
+        return number / self.frequency
+
+    def estimate_delta_t(self, data1, data2, method='correlation'):
+        shift = self.estimate_delta_points(data1, data2, method=method)
+        return self.integer_to_time(shift)
+
+    def estimate_speed_2sensors(self, s1, s2):
+        # fe = FeatureExtraction(s1, s2, frequency=SAMPLE_FREQUENCY)
+        delta_t = self.estimate_delta_t(s1, s2)
+        speed = self.fiber_distance / delta_t
+        return -speed
+
+from pathlib import Path
+import pandas as pd
+
+def test_speed_estimation():
+    data_dir = Path(
+        r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\TIRTLE validation\20201124\extracted_events')
+    # unique_events = get_unique_events(data_dir)
+    file1 = 'lane5_large_event1_line1.csv'
+    file2 = 'lane5_large_event1_line2.csv'
+    line1 = pd.read_csv(data_dir/file1)
+    line2 = pd.read_csv(data_dir/file2)
+    SE = SpeedEstimationHY(line1, line2)
+    s = SE.estimate_speed_2sensors(line1.min(axis=1), line2.min(axis=1))
+    # s = -s
+    print(f'speed: {s} m/s or {s*3.6:.3f} kmh')
+    assert s>0 and s<200/3.6
+
+
+
 
 
 

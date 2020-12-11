@@ -3,10 +3,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-
-
 import gzip
-
 
 channel_starts = [8, 64, 120, 176]
 FBGS_TIME_SHIFT_TO_UTC = timedelta(hours=1)
@@ -150,24 +147,17 @@ def extract_raw_files_into_wav_format(batch_files,
         #
         # wav.to_pickle(data_dir/ch_file_name)
 
+def to_txt_file(gzip_file):
+
+
+    pass
 if __name__ == '__main__':
     #%% Francis st
-    TIME_SHIFT_TO_UTC = Francis_TIME_SHIFT_TO_UTC
-    data_dir = Path(
-        r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip')
-    data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip\melbourne_time_20201120_0900AM')
-    data_files = list(data_dir.glob('*.gzip'))
-    extract_raw_files_into_wav_format(data_files,
-                                      channel_starts=channel_starts,
-                                      time_shift_to_utc=TIME_SHIFT_TO_UTC,
-                                      time_range=None,
-                                      out_dir=None,
-                                      save_to_pickle=False)
-
-
-    #%% M80
-    # TIME_SHIFT_TO_UTC = M80_TIME_SHIFT_TO_UTC
-    # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\TIRTLE validation\20201124\driveeasy_raw\melbourne_time_0700AM\melbourne_time_20201125_0700AM')
+    # TIME_SHIFT_TO_UTC = Francis_TIME_SHIFT_TO_UTC
+    # data_dir = Path(
+    #     r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip')
+    # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip\melbourne_time_20201120_0900AM')
+    # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\raw_data\Melbourne_time_20201120_8-10AM')
     # data_files = list(data_dir.glob('*.gzip'))
     # extract_raw_files_into_wav_format(data_files,
     #                                   channel_starts=channel_starts,
@@ -175,6 +165,19 @@ if __name__ == '__main__':
     #                                   time_range=None,
     #                                   out_dir=None,
     #                                   save_to_pickle=False)
+
+
+    #%% M80
+    TIME_SHIFT_TO_UTC = M80_TIME_SHIFT_TO_UTC
+    # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\TIRTLE validation\20201124\driveeasy_raw\melbourne_time_0700AM\melbourne_time_20201125_0700AM')
+    data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Calibration Test 20201201\M80\M80_DriveEasy')
+    data_files = list(data_dir.glob('*.gzip'))
+    extract_raw_files_into_wav_format(data_files,
+                                      channel_starts=channel_starts,
+                                      time_shift_to_utc=TIME_SHIFT_TO_UTC,
+                                      time_range=None,
+                                      out_dir=None,
+                                      save_to_pickle=False)
 
     # df = read_files(data_files)
     #
