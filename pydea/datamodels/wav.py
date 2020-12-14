@@ -6,14 +6,14 @@ import plotly.express as px
 from loguru import logger
 from plotly.offline import plot
 
-from pydea.preprocessing.detrend import detrend_array, detrend_df
-from pydea.preprocessing.remove_outliers import  remove_outliers_df
-
+from pydea.preprocessing.detrend import detrend_df
+from pydea.preprocessing.remove_outliers import remove_outliers_df
 
 class Wav:
     def __init__(self, filename=None):
         self.wav = None
         self.wls = None
+        self.fiber_id = None
         if filename is not None:
             self.filename = filename
             self._read_file(filename)
@@ -47,16 +47,25 @@ class Wav:
         new_wav.timestamp = self.timestamp[start:end]
         new_wav.wav = self.wav[start:end, :]
         new_wav.fiber_id = self.fiber_id
+        if self.wls is not None:
+            new_wav.wls = self.wls.iloc[start:end,:]
         return new_wav
 
     def to_wls(self):
         wav_df = pd.DataFrame(index=self.timestamp, data=self.wav)
-        wls = detrend_df(wav_df)*1000
+        wls = detrend_df(wav_df) * 1000
         wls = remove_outliers_df(wls, outlier_threshold=500)
         wls.sort_index(inplace=True)
         # wls = detrend_array(self.wav) * 1000
         self.wls = wls
         return wls
+
+    def pick_sensors(self, sensors=[0,1,2,3,4,5,6,7,8,9,10]):
+        # TODO
+        self.wav = None
+        self.wls = None
+        pass
+
 
     def plot_agg_history(self, pick_range=[0, 10000]):
         if pick_range is None:
@@ -67,7 +76,7 @@ class Wav:
             end = min(len(self.timestamp), end)
 
         if self.wls is not None:
-            wls = self.wls.iloc[start:end,:]
+            wls = self.wls.iloc[start:end, :]
         else:
             time_index = self.timestamp[start:end]
             # wls = detrend_array(self.wav[start:end,:])*1000
@@ -91,7 +100,7 @@ class Wav:
             end = min(len(self.timestamp), end)
 
         if self.wls is not None:
-            wls = self.wls.iloc[start:end,:]
+            wls = self.wls.iloc[start:end, :]
         else:
             time_index = self.timestamp[start:end]
             # wls = detrend_array(self.wav[start:end,:])*1000
@@ -109,7 +118,6 @@ class Wav:
 
 if __name__ == "__main__":
     # from pydea.datamodels.datamodel import Wav
-
     data_dir = Path(
         r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\HighFrequency333Hz_20201213\HighFreq_333Hz\wav')
     wav_file = data_dir / 'wav_20201212_195900_F03_UTC.npz'
@@ -117,6 +125,7 @@ if __name__ == "__main__":
     wav = Wav(wav_file)
     wav.to_wls()
     wav.plot_agg_history(pick_range=None)
+
     # wav.plot_agg_profile(pick_range=None)
 
     # wav = Wav(wav_file)

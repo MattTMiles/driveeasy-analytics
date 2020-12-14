@@ -92,6 +92,7 @@ class Event:
         self.info = ''
         self.wav1 = []
         self.wav2 = []
+        self.data = {}
         if filename is not None:
             self._read_file(filename)
 
@@ -100,6 +101,7 @@ class Event:
             print('file format not correct. Only .npz files accepted.')
         else:
             event = np.load(filename, allow_pickle=True)
+            self.data = event
             self.event_id = event['event_id']
             self.fiber1_id = event['fiber1_id']
             self.fiber2_id = event['fiber2_id']

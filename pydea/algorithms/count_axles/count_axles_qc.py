@@ -10,7 +10,6 @@ from ..speed_estimation.calculate_speed import calculate_speed_alg1, calculate_s
 SAMPLING_RATE = 200
 FIBER_DISTANCE = 2.5
 
-
 def find_axle_location(wav1, wav2, promin_1=0.001, promin_2=0.001):
     peaks_1 = signal.find_peaks(wav1, prominence=promin_1)
     peaks_2 = signal.find_peaks(wav2, prominence=promin_2)
@@ -73,6 +72,9 @@ def calculate_axle_number_distance(event: Event,
         else:
             speed = np.median(speed_list)
 
+    axle_distance_list = []
+    num_groups = 0
+
     if axle_count > 1:
         axle_length_temp = calculate_axle_distance(axle_list, speed, sampling_rate)
         if axle_count > 4:
@@ -86,46 +88,9 @@ def calculate_axle_number_distance(event: Event,
         axle_count = len(axle_length_temp) + 1
         num_groups = (axle_length_temp > group_check_value).sum()
         # event_features.group = (axle_length_temp > group_check_value).sum()
-    axle_distance_list = axle_length_temp
+        axle_distance_list = axle_length_temp
     # axle_distance_list = calculate_axle_distance(axle_list, speed, sampling_rate)
     return axle_count, axle_distance_list, num_groups
-
-
-# def calculate_speed_qc_alg1(event2, lane_sensor):
-#     trace_temp1 = np.min(event2.wav1[:, lane_sensor], axis=1)
-#     trace_temp2 = np.min(event2.wav2[:, lane_sensor], axis=1)
-#
-#     speed_valid = signal.correlate(trace_temp1, trace_temp2)
-#     try:
-#         speed_corr = -1 * 2.5 / (speed_valid.argmax() - len(event2.wav1)) * SAMPLING_RATE * 3.6
-#     except:
-#         speed_corr = 0
-#
-#     return speed_corr
-
-
-# work with event with wls. Use max of absolute value to aggregate data from difference sensors;
-# def calculate_speed_qc_alg2(event2, lane_sensor):
-#     kk = np.min(event2.wav1[:, lane_sensor_1], axis=0).argmin()
-#     # trace_temp1 = np.max(np.abs(event_list[j].wav1[:,lane_sensor_1]), axis=1)
-#     trace_temp1 = np.abs(event2.wav1[:, kk])
-#     trace_temp2 = np.abs(event2.wav2[:, kk])
-#
-#     #     trace_temp2 = np.max(np.abs(event.wav2[:, lane_sensor]), axis=1)
-#     #     trace_temp1 = np.max(np.abs(event.wav1[:, lane_sensor]), axis=1)
-#     speed_valid = signal.correlate(trace_temp1, trace_temp2)
-#     try:
-#         speed_corr = -1 * 2.5 / (speed_valid.argmax() - len(event2.wav1)) * SAMPLING_RATE * 3.6
-#     except:
-#         speed_corr = 0
-#     peaks_temp2 = signal.find_peaks(trace_temp2, prominence=0.002)
-#     peaks_temp1 = signal.find_peaks(trace_temp1, prominence=0.002)
-#     if len(peaks_temp1[0]) == 0 or len(peaks_temp2[0]) == 0:
-#         return speed_corr, 0, 0
-#     else:
-#         speed_agg_peak = -1 * 2.5 / (peaks_temp1[0][0] - peaks_temp2[0][0]) * SAMPLING_RATE * 3.6
-#         return speed_corr, speed_agg_peak, np.max([len(peaks_temp1[0]), len(peaks_temp1[0])])
-
 
 if __name__ == '__main__':
     # load extracted events
