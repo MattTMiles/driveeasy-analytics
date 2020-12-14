@@ -8,6 +8,7 @@ import pandas as pd
 # from pydea.algorithms.event_extraction.extract_events_hy import create_event_data
 from pydea.algorithms.event_extraction.extract_events_qc import extract_events
 from pydea.algorithms.event_extraction.extract_events_hy import two_stage_event_extraction, create_event_data
+from pydea.viz.event import  plot_events
 
 #%%
 data_dir = Path(
@@ -19,7 +20,7 @@ wav11.to_wls()
 
 wav_file2 = data_dir / 'wav_20201212_195900_F04_UTC.npz'
 wav2 = Wav(wav_file2)
-wav22 = wav1.clip(pick_range=[0,10000])
+wav22 = wav2.clip(pick_range=[0,10000])
 wav22.to_wls()
 
 #%% extract events using Hy_algo1
@@ -44,7 +45,39 @@ for event in events:
 
 wls_df = pd.DataFrame(index=wav11.timestamp, data=wav11.wls.min(axis=1))
 #%%
-from pydea.viz.event import  plot_events
+from plotly.offline import plot
+import datetime
+t1 = datetime.datetime(2020,12,12,19,59,20)
+fig = px.line(wls_df)
+for event in events:
+    start = event.timestamp[0]
+    end = event.timestamp[-1]
+    start_dt = pd.to_datetime(start)
+    end_dt = pd.to_datetime(end)
+    
+    print(f'start:{start}')
+    fig.add_vline(x=start_dt,line=dict(color="LightSeaGreen", width=3,))
+    fig.add_vline(x=end_dt,line=dict(
+                      color="Blue",
+                      width=3,))
+    # fig.add_hline(y=1)
+plot(fig)
+    # fig.add_shape(type="line",
+    #               xref="x", yref="y",
+    #               x0=start, y0=0, x1=start, y1=1,
+    #               line=dict(
+    #                   color="LightSeaGreen",
+    #                   width=3,
+    #               ))
+    # fig.add_shape(type="line",
+    #               xref="x", yref="y",
+    #               x0=end, y0=0, x1=end, y1=2,
+    #               line=dict(
+    #                   color="Blue",
+    #                   width=3,
+                  # ))
+# plot(fig,filename='events_and_wls.html')
+#%%
 plot_events(events=events, wls_df=wls_df)
 
 #%%

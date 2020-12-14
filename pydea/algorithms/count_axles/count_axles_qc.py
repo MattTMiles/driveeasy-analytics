@@ -41,7 +41,6 @@ def find_axle_location(wav1, wav2, promin_1=0.001, promin_2=0.001):
             axle_list = np.asarray(peaks_2[0]) - peaks_2[0][0]
     return axle_count, axle_list
 
-
 def calculate_axle_distance(axle_list: List,
                             speed: Union[float, int],
                             sampling_rate: Union[float, int]):
@@ -50,14 +49,15 @@ def calculate_axle_distance(axle_list: List,
         axle_length_list[i] = (axle_list[i + 1] - axle_list[i]) / sampling_rate * speed / 3.6
     return axle_length_list
 
-
 def calculate_axle_number_distance(event: Event,
                                    lane_sensor: List,
                                    promin_1: float = 0.001,
                                    promin_2: float = 0.001,
                                    sampling_rate: Union[float, int] = 200):
-    wav1 = event.wav1
-    wav2 = event.wav2
+    wav10 = event.wav1
+    wav20 = event.wav2
+    wav1 = wav10 - np.median(wav10,axis=0)
+    wav2 = wav20 - np.median(wav20,axis=0)
     trace_temp2 = np.abs(np.min(wav2[:, lane_sensor], axis=1))
     trace_temp1 = np.abs(np.min(wav1[:, lane_sensor], axis=1))
     axle_count, axle_list = find_axle_location(trace_temp1, trace_temp2, promin_1=promin_1, promin_2=promin_2)
