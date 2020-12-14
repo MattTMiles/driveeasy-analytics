@@ -1,4 +1,4 @@
-from pydea.ETL import tirtle, wav
+from pydea.ETL import tirtl, wav
 from pathlib import Path
 import pandas as pd
 import numpy as np

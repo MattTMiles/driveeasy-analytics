@@ -85,15 +85,15 @@ def calculate_speed_qc_alg1(event2, lane_sensor):
     return speed_corr
 
 
-# work with event2 with wls. Use max of absolute value to aggregate data from difference sensors;
+# work with event with wls. Use max of absolute value to aggregate data from difference sensors;
 def calculate_speed_qc_alg2(event2, lane_sensor):
     kk = np.min(event2.wav1[:, lane_sensor_1], axis=0).argmin()
     # trace_temp1 = np.max(np.abs(event_list[j].wav1[:,lane_sensor_1]), axis=1)
     trace_temp1 = np.abs(event2.wav1[:, kk])
     trace_temp2 = np.abs(event2.wav2[:, kk])
 
-    #     trace_temp2 = np.max(np.abs(event2.wav2[:, lane_sensor]), axis=1)
-    #     trace_temp1 = np.max(np.abs(event2.wav1[:, lane_sensor]), axis=1)
+    #     trace_temp2 = np.max(np.abs(event.wav2[:, lane_sensor]), axis=1)
+    #     trace_temp1 = np.max(np.abs(event.wav1[:, lane_sensor]), axis=1)
     speed_valid = signal.correlate(trace_temp1, trace_temp2)
     try:
         speed_corr = -1 * 2.5 / (speed_valid.argmax() - len(event2.wav1)) * SAMPLING_RATE * 3.6

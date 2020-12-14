@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy import signal
 
-def detrend(arr):
+def detrend_array(arr):
     median1000 = signal.medfilt(arr, kernel_size=1001)
     arr = arr - median1000
     return arr

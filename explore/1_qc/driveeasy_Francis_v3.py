@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 import scipy.signal as signal
 import datetime
-from pydea.ETL import tirtle, wav
+from pydea.ETL import tirtl, wav
 from pathlib import Path
 
 FIBER_DISTANCE = 2.5
@@ -97,7 +97,7 @@ class Event2:
         self.wav2 = []
 
 
-# work with event2 with wls. Use speed determine by axle first; if axle method fails, use corr of aggregate signal
+# work with event with wls. Use speed determine by axle first; if axle method fails, use corr of aggregate signal
 def calculate_speed_qc_alg1(event2, lane_sensor):
     trace_temp1 = np.sum(np.abs(event2.wav1[:, lane_sensor]), axis=1)
     peaks_temp1 = signal.find_peaks(trace_temp1, prominence=0.008)

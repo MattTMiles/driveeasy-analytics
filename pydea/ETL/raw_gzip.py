@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import gzip
 
-channel_starts = [8, 64, 120, 176]
+channel_starts = [8, 64]#, 120, 176]
 FBGS_TIME_SHIFT_TO_UTC = timedelta(hours=1)
 TIME_SHIFT = timedelta(hours=14,minutes=53,seconds=24)
 
@@ -170,7 +170,8 @@ if __name__ == '__main__':
     #%% M80
     TIME_SHIFT_TO_UTC = M80_TIME_SHIFT_TO_UTC
     # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\TIRTLE validation\20201124\driveeasy_raw\melbourne_time_0700AM\melbourne_time_20201125_0700AM')
-    data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Calibration Test 20201201\M80\M80_DriveEasy')
+    # data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Calibration Test 20201201\M80\M80_DriveEasy')
+    data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\HighFrequency333Hz_20201213\HighFreq_333Hz')
     data_files = list(data_dir.glob('*.gzip'))
     extract_raw_files_into_wav_format(data_files,
                                       channel_starts=channel_starts,
@@ -183,5 +184,5 @@ if __name__ == '__main__':
     #
     # print(df.head())
 #%% load data
-# data_file = 'wav_20201119_140113_F01_UTC.npz'
-# d = np.load(data_dir/data_file)
+data_file = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\M80\HighFrequency333Hz_20201213\HighFreq_333Hz\wav')/'wav_20201212_195900_F01_UTC.npz'
+d = np.load(data_dir/data_file)
