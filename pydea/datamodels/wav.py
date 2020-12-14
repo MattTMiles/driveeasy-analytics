@@ -7,10 +7,13 @@ from loguru import logger
 from plotly.offline import plot
 
 from pydea.preprocessing.detrend import detrend_array, detrend_df
+from pydea.preprocessing.remove_outliers import  remove_outliers_df
 
 
 class Wav:
     def __init__(self, filename=None):
+        self.wav = None
+        self.wls = None
         if filename is not None:
             self.filename = filename
             self._read_file(filename)
@@ -47,7 +50,11 @@ class Wav:
         return new_wav
 
     def to_wls(self):
-        wls = detrend_array(self.wav) * 1000
+        wav_df = pd.DataFrame(index=self.timestamp, data=self.wav)
+        wls = detrend_df(wav_df)*1000
+        wls = remove_outliers_df(wls, outlier_threshold=500)
+        wls.sort_index(inplace=True)
+        # wls = detrend_array(self.wav) * 1000
         self.wls = wls
         return wls
 
@@ -59,11 +66,14 @@ class Wav:
             start, end = pick_range
             end = min(len(self.timestamp), end)
 
-        time_index = self.timestamp[start:end]
+        if self.wls is not None:
+            wls = self.wls.iloc[start:end,:]
+        else:
+            time_index = self.timestamp[start:end]
+            # wls = detrend_array(self.wav[start:end,:])*1000
+            wav_df = pd.DataFrame(index=time_index, data=self.wav[start:end, :])
+            wls = detrend_df(wav_df) * 1000
 
-        # wls = detrend_array(self.wav[start:end,:])*1000
-        wav_df = pd.DataFrame(index=time_index, data=self.wav[start:end, :])
-        wls = detrend_df(wav_df)
         agg_df = wls.min(axis=1)
         # df = pd.DataFrame(index=time_index, data=agg_data)
         logger.info('plotting wls...')
@@ -80,14 +90,16 @@ class Wav:
             start, end = pick_range
             end = min(len(self.timestamp), end)
 
-        time_index = self.timestamp[start:end]
+        if self.wls is not None:
+            wls = self.wls.iloc[start:end,:]
+        else:
+            time_index = self.timestamp[start:end]
+            # wls = detrend_array(self.wav[start:end,:])*1000
+            wav_df = pd.DataFrame(index=time_index, data=self.wav[start:end, :])
+            wls = detrend_df(wav_df) * 1000
+            wls.columns = [f'S{i + 1}' for i in range(wav_df.shape[1])]
 
-        # wls = detrend_array(self.wav[start:end,:])*1000
-        wav_df = pd.DataFrame(index=time_index, data=self.wav[start:end, :])
-        wls = detrend_df(wav_df)
-        wls.columns = [f'S{i + 1}' for i in range(wav_df.shape[1])]
         agg_df = wls.min(axis=0)
-
         # df = pd.DataFrame(index=time_index, data=agg_data)
         logger.info('plotting wls...')
         fig = px.line(agg_df)
@@ -103,7 +115,8 @@ if __name__ == "__main__":
     wav_file = data_dir / 'wav_20201212_195900_F03_UTC.npz'
     # data = np.load(wav_file, allow_pickle=True)
     wav = Wav(wav_file)
-    wav.plot_agg_history(pick_range=[0, 5000])
-    wav.plot_agg_profile(pick_range=[0, 5000])
+    wav.to_wls()
+    wav.plot_agg_history(pick_range=None)
+    # wav.plot_agg_profile(pick_range=None)
 
     # wav = Wav(wav_file)
