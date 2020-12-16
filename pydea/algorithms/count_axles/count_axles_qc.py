@@ -90,7 +90,7 @@ def calculate_axle_number_distance(event: Event,
         # event_features.group = (axle_length_temp > group_check_value).sum()
         axle_distance_list = axle_length_temp
     # axle_distance_list = calculate_axle_distance(axle_list, speed, sampling_rate)
-    return axle_count, axle_distance_list, num_groups
+    return axle_count, axle_distance_list, num _groups
 
 if __name__ == '__main__':
     # load extracted events
