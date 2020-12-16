@@ -13,47 +13,6 @@ class LaneSensors:
         self.leading_sensors = leading_sensors
         self.trailing_sensors = trailing_sensors
 
-class Raw:
-    def __init__(self, filename, use_pandas=True, use_parser=False):
-        pass
-
-class RawOperations:
-
-    def extract_events(self, raw: Raw, pick_algorithm:str=None):
-        if pick_algorithm == 'qc_v1':
-            pass
-        elif pick_algorithm == 'hy_v1':
-            pass
-
-        elif pick_algorithm == 'yj_v1':
-            pass
-
-        else:
-            logger.warning('Algorithm not found. Choose from one of these algorithms:{self.algo_list}')
-
-        pass
-
-    def set_annotations(self):
-        pass
-
-
-    def plot_agg_history(self, head=1000):
-        """
-        Aggregated data column-wise, resulting data index is timestamp. Plot aggregate data.
-        Returns:
-
-        """
-
-    def plot_agg_profile(self, head=1000):
-        """
-        Aggregated data row-wise, resulting data index is sensor id. Plot aggregate data.
-        Args:
-            head: only plot first few data point specified by `head`.
-
-        Returns:
-
-        """
-
 class LaneConfiguration:
     def __init__(self,
                  lane_id: Union[str,int],

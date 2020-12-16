@@ -11,8 +11,9 @@ import pytz
 from tqdm import tqdm
 from pydea.preprocessing.shift_time import interpolate_time_index_from_line_number
 
-M80_TIME_SHIFT_TO_UTC = timedelta(hours=3,minutes=53,seconds=9) #M80
-Francis_TIME_SHIFT_TO_UTC = timedelta(hours=0,minutes=57,seconds=52) #Francis st.
+from pydea.defaults import M80_TIME_SHIFT_TO_UTC, Francis_TIME_SHIFT_TO_UTC
+# M80_TIME_SHIFT_TO_UTC = timedelta(hours=3,minutes=53,seconds=9) #M80
+# Francis_TIME_SHIFT_TO_UTC = timedelta(hours=0,minutes=57,seconds=52) #Francis st.
 
 # fbgs_struct = struct.Struct('s\t I\t f\t f\t f\t')
 # data = b'2020/10/09\t 101\t 1.0\t 1.1\t 1.2\t'
@@ -21,139 +22,6 @@ Francis_TIME_SHIFT_TO_UTC = timedelta(hours=0,minutes=57,seconds=52) #Francis st
 # print(d1)
 # ChannelData = namedtuple('ChannelData', "channel_id num_sensors error_code wavelength power")
 
-class ChannelData:
-    def __init__(self,channel_id, num_sensors, error_code, wavelength, power=None):
-        self.channel_id = channel_id
-        self.num_sensors = num_sensors
-        self.error_code = error_code
-        self.wavelength = wavelength
-        self.power = power
-
-class FbgsParser:
-    """
-    Parse the raw readout (Bytes) from FBGS device to more meaningful data structure (FbgsData).
-    """
-
-    def __init__(self, failed_case_folder=Path(r'data\failed_to_decode')):
-        self.failed_case_folder = failed_case_folder
-        self.failed_case_folder.mkdir(parents=True, exist_ok=True)
-
-    def parse(self, msg_byte, from_strain=True):
-        """
-        Parse the raw readout (Bytes) from FBGS device to more meaningful data structure (FbgsData). Refer to FBGS user
-        manual for the structure of the raw message.
-
-        Args:
-            msg_byte (Byte): message read from tcp socket sent by FBGS device
-        Returns:
-            FbgsData
-        """
-        # logger.info(f'msg_byte to parse:{msg_byte}')
-        try:
-            msg = msg_byte.decode('utf-8').split('\t')
-        except UnicodeDecodeError as decode_error:
-            logger.debug(
-                'Cannot parse message pulled from FBGS TCP socket using utf-8 encoding. Try Latin1 encoding.')
-            logger.debug(decode_error.args)
-
-            with open(self.failed_case_folder / f'{datetime.strftime(datetime.now(), "%m-%d_%H-%M-%S")}.txt',
-                      'wb') as f:
-                f.write(msg_byte)
-
-            try:
-                msg = msg_byte.decode('Latin1').split('\t')
-            except Exception as e:
-                logger.debug(f'Cannot decode with Latin1 encoding, skipping the record. {e.args}')
-                with open(self.failed_case_folder / f'utf8_no_Latin1_no_{datetime.strftime(datetime.now(), "%m-%d_%H-%M-%S")}.txt',
-                          'wb') as f:
-                    f.write(msg_byte)
-                msg = msg_byte.decode('Latin1', errors='ignore').split('\t')
-
-            # return None
-
-            # try:
-            #     msg = msg_byte.decode(encoding='windows-1252', errors="ignore").split('\t')
-            # #
-            # # try:
-            # #     msg = msg_byte.decode(errors="ignore").split('\t')
-            # except:
-            #     logger.error("couldnt decode message")
-            #     return None
-
-
-
-        if len(msg) < 4:
-            logger.debug('data row from fbgs is corrupt.')
-            # pprint(msg)
-            return None
-
-        if msg[0] == 0 and msg[1] == 0:  # strip 4 byte length header
-            print(f'strip 4 bytes length header: {msg}')
-            msg = msg[4:]
-
-        try:
-            date = msg[0]
-            time = msg[1]
-            timestamp = pd.to_datetime(date + ' ' + time, format='%Y/%m/%d %H:%M:%S')
-        except:
-            return None
-
-        try:
-
-            line_number = int(msg[2])  # ValueError: invalid literal for int() with base 10: '-71.8'
-            num_channels = int(msg[3])
-
-        except ValueError:
-            logger.debug('fail to parse fbgs data: line number or number of channnels not integer.')
-            # pprint(f'byte: {msg_byte}')
-            # pprint(f'decoded msg: {msg}')
-            return None
-
-        try:
-            data = msg[4:]
-            channel_data = {}
-            channel_list = []
-            total_sensors = 0
-            for ch in range(1, int(num_channels) + 1):
-                channel_id = int(data[0])
-                channel_list.append(channel_id)
-                num_sensors = int(data[1])
-                if num_sensors != 25:
-                    logger.warning(f'number of sensors {num_channels} not equal to expected 25. ')
-
-                total_sensors += num_sensors
-                channel_error_code = data[2:6]
-                if channel_error_code != ['0','0','0','0']:
-                    logger.warning(f'Error found from FBGS, error code: {channel_error_code}; channel {channel_id}, \n msg:{msg}')
-
-                wavelengths = data[6:(6 + num_sensors)]
-                powers = data[(6 + num_sensors):6 + 2 * num_sensors]
-                # channel_data[f'channel_{channel_id}'] = [float(wl) for wl in wavelengths]
-                data = data[6 + 2 * num_sensors:]
-
-                ch_data = ChannelData(channel_id=ch, num_sensors=num_sensors, error_code=channel_error_code,
-                                      wavelength=np.array([float(wl) for wl in wavelengths]),power=powers)
-                channel_data[f'channel_{channel_id}'] = ch_data
-
-            # namedtuple('ChannelData', "channel_id num_sensors error_code wavelength strain")
-
-            if len(data) == total_sensors + 1 or len(data) == total_sensors:
-                # strain = data
-                pass
-            else:
-                # logger.warning(f'strain data length {len(data)} not equal to expected length {total_sensors}')
-                with open(
-                        self.failed_case_folder / f'unexpected_data_len_{datetime.strftime(datetime.now(), "%m-%d_%H-%M-%S")}.txt',
-                        'wb') as f:
-                    f.write(msg_byte)
-
-                # strain = data
-
-            return FbgsDataRow(date=date, time=time, line_number=line_number, channel_list=channel_list,
-                            channel_data=channel_data)
-        except Exception as e:
-            print(e.args)
-            return None
 
 class FbgsDataRow:
     """
