@@ -350,7 +350,7 @@ for win_i in range(int(lane_west.shape[0]/window_size)):
     # window_east[abs(window_east)>0.01]=np.nan
 
     # event detection   
-    event_flag, pks_w, pks_e = event_detection(window_west, window_east, win_i, False)
+    event_flag, pks_w, pks_e = event_detection(window_west, window_east, win_i, True)
         
     if event_flag == 1:
         # determine driving direction
