@@ -15,13 +15,16 @@ from pydea.defaults import M80_TIME_SHIFT_TO_UTC, Francis_TIME_SHIFT_TO_UTC
 # M80_TIME_SHIFT_TO_UTC = timedelta(hours=3,minutes=53,seconds=9) #M80
 # Francis_TIME_SHIFT_TO_UTC = timedelta(hours=0,minutes=57,seconds=52) #Francis st.
 
-# fbgs_struct = struct.Struct('s\t I\t f\t f\t f\t')
-# data = b'2020/10/09\t 101\t 1.0\t 1.1\t 1.2\t'
-# d = data.split(b'\t')
-# d1 = fbgs_struct.unpack(data)
-# print(d1)
-# ChannelData = namedtuple('ChannelData', "channel_id num_sensors error_code wavelength power")
-
+def convert_raw_gzip_into_text_file(raw_file, out_file=None):
+    raw_file = Path(raw_file)
+    with gzip.GzipFile(raw_file, 'r') as f:
+        data = f.read()
+        if out_file is None:
+            file_stem = raw_file.stem
+            out_file = raw_file.parent / f'{file_stem}.txt'
+        print(f'txt file saved to: {out_file}')
+        with open(out_file, 'wb') as out_f:
+            out_f.write(data)
 
 class FbgsDataRow:
     """
@@ -111,7 +114,7 @@ class FbgsDataBlock:
             return
 
         if not out_dir:
-            out_dir = Path('.')
+            out_dir = Path('../ETL')
 
         for ch_id, ch_dataset in self.wav_dataset.items():
             ch_timestamp = ch_dataset['timestamp']
@@ -221,5 +224,5 @@ if __name__ == '__main__':
     # print(wav_dataset.keys())
     #
     #%% test load data
-    d3 = np.load(Path(r'C:\Users\hyu\gitlab_repos\driveeasy-analytics\pydea\ETL\wav_20201212_195900_F03.npz'), allow_pickle=True)
+    d3 = np.load(Path(r'/pydea/ETL/wav_20201212_195900_F03.npz'), allow_pickle=True)
     #         # print(parsed_raw)
