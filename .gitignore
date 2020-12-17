@@ -14,6 +14,7 @@ Thumbs.db
 *.app
 *.exe
 *.war
+*.pyc
 
 # Large media files
 *.mp4
