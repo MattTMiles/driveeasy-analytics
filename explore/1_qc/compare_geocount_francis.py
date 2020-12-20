@@ -119,11 +119,11 @@ def load_datafile(filename):
 
 
 if __name__ == '__main__':
-    filename_geocount = r'C:\Users\qchen\PARC\Fibridge-PARC - Drive Easy\AustraliaDeploy\Francis\raw_data\Melbourne_time_20201201\Geocount\042-000431.csv'
+    filename_geocount = r'C:\Users\qchen\PARC\Fibridge-PARC - Drive Easy\AustraliaDeploy\Francis\raw_data\Melbourne_time_20201201\Geocount\042-000432.csv'
     df_geo = read_geocount_to_df(filename_geocount)
-    df_geo_lan = df_geo[df_geo['LaneTo'].isin(['2'])].reset_index(drop=True)
+    df_geo_lan = df_geo[df_geo['LaneTo'].isin(['1'])].reset_index(drop=True)
 
-    filename_extracted_raw = r'C:\driveeasy2020\driveeasy-analytics\driveeasy-analytics\explore\1_qc\Francis_1201_0930_lane_3_trial_1217_filtered_triggered_events.npz'
+    filename_extracted_raw = r'C:\driveeasy2020\driveeasy-analytics\driveeasy-analytics\explore\1_qc\Francis_1201_0930_lane_1_trial_1219_filtered_triggered_events.npz'
     events = load_datafile(filename_extracted_raw)
 
     # Change the timestamp to UTC+11 local time
@@ -139,7 +139,7 @@ if __name__ == '__main__':
              linefmt='C6-', use_line_collection=True)
     plt.stem(df_geo_lan['Timestamp'][bb]+datetime.timedelta(seconds=0), [1, ]*len(bb), markerfmt='C7o', linefmt='C7-', use_line_collection=True)
     plt.xticks(rotation=20)
-    plt.ylabel('Speed (KPH)')
+    plt.ylabel('Detected Event')
 
     # count total event in given time range, find false positive event index
     df_fibridge = pd.DataFrame(event_time, columns=['Timestamp'])
