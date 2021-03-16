@@ -5,9 +5,13 @@ Refer to `https://github.com/FilippoBovo/production-data-science` for an excelle
 
 ## Setting up the development environment
 1. Clone the repository:
+   If you are on PARC internal network (have access to PARC gitlab-internal):
 ```
 git clone https://gitlab-external.parc.com/iot-tower/driveeasy/driveeasy-analytics.git
 ```
+   If not, please use the github repo:
+   `git clone https://github.com/hyuparc/driveasy-analytics.git` 
+   
 If you want to save your username and password to avoid typing it everytime your push/pull:
 
 You can use the git config to enable credentials storage in git.
