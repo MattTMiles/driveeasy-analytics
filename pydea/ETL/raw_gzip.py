@@ -156,6 +156,7 @@ if __name__ == '__main__':
     data_dir = Path(
         r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip')
     data_dir = Path(r'C:\Users\hyu\PARC\Fibridge-PARC - General\Drive Easy\AustraliaDeploy\Francis\VIPER VIM validation\driveeasy_data\raw_gzip\melbourne_time_20201120_0900AM')
+    data_dir = Path(r'C:/Users/matthewmiles/Documents/FiBridge/VIPER VIM validation/driveeasy_data/raw_gzip/melbourne_time_20201120_0900AM')
     data_files = list(data_dir.glob('*.gzip'))
     extract_raw_files_into_wav_format(data_files,
                                       channel_starts=channel_starts,

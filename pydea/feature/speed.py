@@ -62,3 +62,57 @@ class SpeedEstimationHY:
 # print(speed)
 # plt.figure()
 # plt.plot(speed_valid)
+
+
+class SpeedEstimation_algs:
+    #These are the assorted speed algorithms from the ipynb's
+
+    def calculate_speed_qc_alg1(event, lane_sensor):
+    
+        sos = signal.butter(1, 5, 'hp', fs=SAMPLING_RATE, output='sos')
+        filtered_wav1 = signal.sosfilt(sos, event.wav1, axis=0)
+        filtered_wav2 = signal.sosfilt(sos, event.wav2, axis=0)
+        
+        trace_temp1 = np.max(np.abs(filtered_wav1[:, lane_sensor]), axis=1)
+        trace_temp2 = np.max(np.abs(filtered_wav2[:, lane_sensor]), axis=1)
+
+        scaled_values_1 = normalize_maxmin(trace_temp1)
+        scaled_values_2 = normalize_maxmin(trace_temp2)
+        
+        speed_valid = signal.correlate(scaled_values_1, scaled_values_2)
+        
+        peaks_temp2 = signal.find_peaks(scaled_values_2, prominence=0.1)
+        peaks_temp1 = signal.find_peaks(scaled_values_1, prominence=0.1)
+        if len(peaks_temp1[0]) == 0 or len(peaks_temp2[0]) == 0:
+            speed_peak = 0
+        else:
+            speed_peak = -1*FIBER_DISTANCE / (peaks_temp1[0][0] - peaks_temp2[0][0]) * SAMPLING_RATE * 3.6
+        
+        if speed_valid.argmax() - len(event.wav1)!= 0:
+            speed_corr = -1 * FIBER_DISTANCE / (speed_valid.argmax() - len(event.wav1)) * SAMPLING_RATE * 3.6
+        else:
+            speed_corr = 0
+        return speed_corr, speed_peak
+
+    def calculate_speed_qc_alg2(event, lane_sensor):
+        kk = np.min(event.wav1[:, lane_sensor], axis=0).argmin()
+        # trace_temp1 = np.max(np.abs(event_list[j].wav1[:,lane_sensor_1]), axis=1)
+        trace_temp1 = np.abs(event.wav1[:,kk])
+        trace_temp2 = np.abs(event.wav2[:,kk])
+        scaled_values_1 = normalize_maxmin(trace_temp1)
+        scaled_values_2 = normalize_maxmin(trace_temp2)
+    #     trace_temp2 = np.max(np.abs(event.wav2[:, lane_sensor]), axis=1)
+    #     trace_temp1 = np.max(np.abs(event.wav1[:, lane_sensor]), axis=1)
+        speed_valid = signal.correlate(scaled_values_1, scaled_values_2)
+        if speed_valid.argmax() - len(event.wav1)!= 0:
+            speed_corr = -1 * FIBER_DISTANCE / (speed_valid.argmax() - len(event.wav1)) * SAMPLING_RATE * 3.6
+        else:
+            speed_corr = 0
+
+        peaks_temp2 = signal.find_peaks(scaled_values_2, prominence=0.1)
+        peaks_temp1 = signal.find_peaks(scaled_values_1, prominence=0.1)
+        if len(peaks_temp1[0]) == 0 or len(peaks_temp2[0]) == 0:
+            return speed_corr, 0
+        else:
+            speed_agg_peak = -1*FIBER_DISTANCE / (peaks_temp1[0][0] - peaks_temp2[0][0]) * SAMPLING_RATE * 3.6
+            return speed_corr, speed_agg_peak
